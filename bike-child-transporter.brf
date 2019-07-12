@@ -53,7 +53,7 @@ assign is_ldcr =
      if ignore_cycleroutes then false
      else any_cycleroute
 
-assign isbike = or bicycle=yes or or bicycle=permissive bicycle=designated lcn=yes
+assign isbike = or or bicycle=permissive bicycle=designated lcn=yes
 assign ispaved = surface=paved|asphalt|concrete|paving_stones
 assign isunpaved = not or surface= or ispaved surface=fine_gravel|cobblestone
 assign probablyGood = or ispaved and isbike not isunpaved
