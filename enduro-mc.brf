@@ -271,17 +271,8 @@ assign misc_penalty =
 # now assign the parameters for the routing engine (initialcost, turncost and flat/up/down costfactors)
 #
 assign turncost = 
-  if highway=path|footway
-    then 
-    (
-      if equal inclination -1                            then 0
-                                                         else 10
-    )
-    else
-    (
-      if highway=track                                   then 50
-                                                         else 150
-    )
+  if highway=track                                      then 50
+                                                        else 150
 
 #
 # assign parameters for turn instruction generation
