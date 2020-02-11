@@ -43,7 +43,6 @@ assign steps_penalty            = 9999             # avoid steps
                                                    # penalty for steps
 assign ferry_penalty            = 5000             # penalty for ferries
 assign private_penalty          = 50               # penalty for private ways and nodes
-assign bicycle_no_penalty       = 5                # penalty for ways and nodes with bicycle=no
 assign slippery_muddy_penalty   = if is_wet        # penalty for unpaved roads and tracks, which are tricky to ride when wet
                                     then 2
                                     else 0
@@ -98,24 +97,6 @@ assign isunpaved                = not ( or surface= ispaved )
 assign surfacebadwhenwet        = and isunpaved ( not surface=compacted|fine_gravel )
 assign highwaybadwhenwet        = or highway=path ( or tracktype=grade5|grade4 highway=bridleway )
 assign isbadwhenwet             = or surfacebadwhenwet highwaybadwhenwet
-
-assign any_cycleroute           = or route_bicycle_icn=yes ( or route_bicycle_ncn=yes ( or route_bicycle_rcn=yes route_bicycle_lcn=yes ) )
-
-#
-# get the inclination (up=1, down=-1, unknown=0)
-#
-assign inclination = 
-if incline=
-  then 0
-  else if incline=yes|up|5%|8%|10%|15%|20%|25%|30%
-    then if reversedirection=yes
-      then -1
-      else 1
-  else if incline=down|-5%|-8%|-10%|-15%|-20%|-25%|-30%
-    then if reversedirection=yes
-      then 1
-      else -1
-    else 0
 
 #
 # base penalties for roadtypes
