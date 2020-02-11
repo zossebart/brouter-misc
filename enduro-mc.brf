@@ -41,8 +41,6 @@ assign mj_rd_penalty            = 0.5              # additional penalty for majo
 assign construction_penalty     = 3                # penalty for roads in construction (oftentimes rideable by mtb)
 assign steps_penalty            = 9999             # avoid steps
                                                    # penalty for steps
-assign steps_ramp_uh_penalty    = 5                # penalty for uphill steps with a ramp (might be smaller than default steps penalty)
-assign steps_ramp_dh_penalty    = 2                # penalty for downhill steps with a ramp (even smaller than uphill ramp)
 assign ferry_penalty            = 5000             # penalty for ferries
 assign private_penalty          = 6                # penalty for private ways and nodes
 assign bicycle_no_penalty       = 5                # penalty for ways and nodes with bicycle=no
@@ -51,25 +49,6 @@ assign slippery_muddy_penalty   = if is_wet        # penalty for unpaved roads a
                                     else 0
 assign ford_penalty             = max 0 ( sub 15 ( multiply mtb_hard_factor 8 ) )
                                                    # penalty for fords (you might not want to get your feet wet ;-) )
-
-# +++ special downhill parameters
-assign considerdownhill         = true             # use special penalties for downhills? (enables/disables below parameters)
-assign dh_penalty               = max 0 ( add 2.0 ( multiply mtb_hard_factor 0.5 ) )
-                                                   # additional penalty for undesired downhills (e.g. major roads)
-assign dh_difficult_penalty     = max 0 ( sub 10 ( multiply mtb_hard_factor 1 ) )                
-                                                   # additional downhill penalty for ways with high difficulty (mtb/sac_scale)
-assign dh_use_tracks            = lesser mtb_hard_factor 0
-                                                   # use less penalty for downhill tracks than for other waytypes? (0/1)
-                                                   # enables/disables dh_track_penalty
-assign dh_track_penalty         = multiply 0.75 dh_penalty 
-                                                   # percentage of reduced downhill penalty for tracks
-
-# +++ special uphill parameters
-assign consideruphill           = true             # use special penalties for uphills? (enables/disables below parameters)
-assign uh_penalty               = max 0 ( sub 2.5 ( multiply mtb_hard_factor 0.25 ) )
-                                                   # additional penalty for undesired uphills (e.g. paths)
-assign uh_difficult_penalty     = max 0 ( sub 10 ( multiply mtb_hard_factor 1 ) )
-                                                   # additional uphill penalty for ways with high difficulty (mtb/sac_scale or mtb_scale_uphill)
 
 # ------------------------------------------- global defines end
 
@@ -138,21 +117,6 @@ if incline=
       else -1
     else 0
 
-
-#
-# precalculate steps penaltys
-#
-assign steps_uh_penalty =
-  if or ramp:stroller=yes ramp:bicycle=yes 
-    then steps_ramp_uh_penalty
-    else multiply 1.2 ( add uh_penalty steps_penalty )         # boost steps uphill penalty even more
-
-assign steps_dh_penalty =
-  if or ramp:stroller=yes ramp:bicycle=yes 
-    then steps_ramp_dh_penalty
-    else add dh_penalty steps_penalty
-
-
 #
 # base penalties for roadtypes
 #
@@ -188,30 +152,6 @@ assign hw_minor_penalty =
 #
 # additional penalties for other road attributes
 #
-assign mtb_sac_penalty =
-  max 0 
-  multiply 
-  ( sub 1 ( multiply mtb_hard_factor 0.25 ) )
-  ( 
-    if ( or mtb:scale=3|2+ sac_scale=demanding_mountain_hiking ) then 2
-    else if ( or mtb:scale=4 sac_scale=alpine_hiking )           then 4
-    else if ( or mtb:scale=5 sac_scale=demanding_alpine_hiking ) then 50
-    else if ( or mtb:scale=6 sac_scale=difficult_alpine_hiking ) then 100
-                                                                 else 0
-  )
-
-assign mtb_uh_penalty =                                         #(supported since 1.4.4)
-  max 0 
-  multiply 
-  ( sub 1 ( multiply mtb_hard_factor 0.25 ) )
-  ( 
-    if      mtb:scale:uphill=3                             then 2
-    else if mtb:scale:uphill=4                             then 4
-    else if mtb:scale:uphill=5                             then 50
-    else if mtb:scale=6                                    then 100
-                                                           else 0
-  )
-
 assign tracktype_penalty =
   max 0 
   multiply 
@@ -430,17 +370,6 @@ assign costfactor =
     else
     min 9999
     add misc_penalty
-    add if ( and ( equal inclination 1 ) mtb_uh_penalty )
-          then 
-          (
-            add 
-            mtb_uh_penalty 
-            (
-              if consideruphill                         then uh_difficult_penalty 
-                                                        else 0                                                                  
-            )
-          )
-                                                        else mtb_sac_penalty
     add tracktype_penalty
     max 1
     if hw_penalty                                       then hw_penalty
@@ -448,103 +377,9 @@ assign costfactor =
     else if hw_minor_penalty                            then hw_minor_penalty
 
     else if highway=path                                then 1
-    else if highway=steps                             
-      then 
-      (
-        if equal inclination 1                          then steps_uh_penalty
-        else
-        (
-          if equal inclination -1                       then steps_dh_penalty
-          else
-          (
-            if reversedirection=yes                     then steps_dh_penalty
-                                                        else steps_uh_penalty
-          )
-        )
-      )
     else if highway=track|bridleway                     then 1
     else if highway=cycleway                            then max 1 ( add 1.1 ( multiply mtb_hard_factor 0.1 ) )
                                                         else 40 # default for any other highway type not handled above
-
-#
-# costfactor for uphills
-#
-assign uphillcostfactor =
-  if consideruphill
-    then 
-    (
-      if and highway= not route=ferry                   then 100000
-      else
-      min 9999
-      add misc_penalty
-      add if ( and ( equal inclination 1 ) mtb_uh_penalty )
-                                                        then add uh_difficult_penalty mtb_uh_penalty
-          else 
-          (
-            if mtb_sac_penalty                          then add uh_difficult_penalty mtb_sac_penalty 
-                                                        else 0 
-          )                                                        
-      add if tracktype_penalty                          then add uh_difficult_penalty tracktype_penalty 
-                                                        else 0
-      max 1
-      if hw_penalty                                     then hw_penalty
-      else if hw_major_penalty                          then hw_major_penalty
-      else if hw_minor_penalty                          then hw_minor_penalty 
-
-      else if highway=path                              then uh_penalty
-      else if highway=steps                             # first try to use incline
-        then if equal inclination 1                     then steps_uh_penalty
-        else if equal inclination -1                    then steps_dh_penalty
-                                                        else steps_uh_penalty # no incline tag, assume step is really uphill
-      else if highway=track                             then 1
-      else if highway=bridleway                         then 1.2
-      else if highway=cycleway                          then 1
-                                                        else 40 # default for any other highway type not handled above
-    )
-                                                        else 0 # no special handling for uphill selected, flat costfactor will be used instead
-
-#
-# costfactor for downhills
-#
-assign downhillcostfactor = 
-  if considerdownhill
-    then 
-    (
-      if and highway= not route=ferry                   then 100000
-      else
-      min 9999
-      add misc_penalty
-      add if ( and ( equal inclination 1 ) mtb_uh_penalty )
-          then 
-          (
-            add if consideruphill                       then uh_difficult_penalty
-                                                        else 0 
-                                                             mtb_uh_penalty
-          )
-          else 
-          (
-            if mtb_sac_penalty                          then add dh_difficult_penalty mtb_sac_penalty 
-                                                        else 0
-          )
-      add if tracktype_penalty                          then add dh_difficult_penalty tracktype_penalty
-                                                        else 0
-      max 1
-      if      hw_penalty                                then add dh_penalty hw_penalty
-      else if hw_major_penalty                          then add dh_penalty hw_major_penalty
-      else if hw_minor_penalty                          then add dh_penalty hw_minor_penalty
-
-      else if highway=path                              then 1
-      else if highway=steps                             # first try to use incline
-        then if equal inclination 1                     then steps_uh_penalty
-        else if equal inclination -1                    then steps_dh_penalty
-                                                        else steps_dh_penalty # no incline tag, assume step is really downhill
-      else if highway=track|bridleway
-        then if dh_use_tracks                           then dh_track_penalty 
-                                                        else dh_penalty
-      else if highway=cycleway                          then add dh_penalty 0.5
-                                                        else 40 # default for any other highway type not handled above
-    )
-                                                        else 0 # no special handling for downhill selected, flat costfactor will be used instead
 
 ---context:node  # following code refers to node tags
 
