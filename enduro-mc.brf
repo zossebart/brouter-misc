@@ -42,7 +42,7 @@ assign construction_penalty     = 3                # penalty for roads in constr
 assign steps_penalty            = 9999             # avoid steps
                                                    # penalty for steps
 assign ferry_penalty            = 5000             # penalty for ferries
-assign private_penalty          = 6                # penalty for private ways and nodes
+assign private_penalty          = 50               # penalty for private ways and nodes
 assign bicycle_no_penalty       = 5                # penalty for ways and nodes with bicycle=no
 assign slippery_muddy_penalty   = if is_wet        # penalty for unpaved roads and tracks, which are tricky to ride when wet
                                     then 2
@@ -180,7 +180,7 @@ assign traffic_penalty =
 #
 assign defaultaccess =
   if access=
-    then ( not motorroad=yes )
+    then true
     else 
     (
       if access=no
@@ -194,61 +194,46 @@ assign defaultaccess =
     )
 
 #
-# calculate logical bike access
+# calculate logical motorbike access
 #
-assign bikeaccess =
-  or 
-  any_cycleroute
-  (
-    if bicycle=
+assign motorcycleaccess =
+    if motorcycle=
       then 
       (
-        if vehicle=
-        then defaultaccess
-        else 
-        ( 
-          if vehicle=private|no
-          then false
-          else true
+        if motor_vehicle=
+        then (
+          if vehicle=
+          then (
+            defaultaccess            
+            )
+          else (
+            if vehicle=private|no
+            then false
+            else true            
+          )
+          )
+        else (
+          if motor_vehicle=private|no
+            then false
+            else true
         )
       )
       else 
       (
-        if not bicycle=private
+        if not motorcycle=private|no
         then true
         else false
       )
-  )
-
-#
-# calculate logical foot access
-#
-assign footaccess =
-  or bikeaccess
-  or bicycle=dismount
-    if foot=
-      then defaultaccess
-      else not foot=private|no
 
 #
 # combine to penalty for access
 #
 assign access_penalty = 
-if bikeaccess 
-  then 
-  (
-    if bicycle=no                                                             # bike access granted from above, but check for bicycle=no
-      then bicycle_no_penalty                                                 # access with penalty for bicycle=no  
-      else 
-      (
-        if bicycle=dismount                                                   # bike access granted from above, but check for bicycle=dismount
-          then ( multiply 0.2 bicycle_no_penalty )                            # access with penalty for bicycle=dismount
-          else 0
-      )
-  )                                                                           # full bike access
+if motorcycleaccess 
+  then 0
   else 
   (
-    if ( or  access=private or bicycle=private or vehicle=private foot=private )
+    if ( or  access=private or motor_vehicle=private or vehicle=private motorcycle=private )
       then                                                    private_penalty # access with penalty for private
       else                                                    100000          # absolutely no access
   )
@@ -397,34 +382,39 @@ assign defaultaccess =
                                                         else true
     )
 
-assign bikeaccess =
-  or nodeaccessgranted=yes
-  if bicycle=
-    then 
-    (
-      if vehicle=                                       then defaultaccess
-      else
+assign motorcycleaccess =
+    if motorcycle=
+      then 
       (
-        if vehicle=private|no                           then false
-                                                        else true
+        if motor_vehicle=
+        then (
+          if vehicle=
+          then (
+            defaultaccess            
+            )
+          else (
+            if vehicle=private|no
+            then false
+            else true            
+          )
+          )
+        else (
+          if motor_vehicle=private|no
+            then false
+            else true
+        )
       )
-    )
-    else
-    (
-      if bicycle=private|no|dismount                    then false
-                                                        else true
-    )
-
-assign footaccess =
-  or bicycle=dismount
-  if foot=                                              then defaultaccess
-    else if foot=private|no                             then false
-                                                        else true
+      else 
+      (
+        if not motorcycle=private|no
+        then true
+        else false
+      )
 
 assign initialcost =
   add  if highway=traffic_signals                       then 100  
                                                         else 0
-  if ( and ( or bikeaccess footaccess ) ( not highway=elevator ) )
+  if ( and ( motorcycleaccess ) ( not highway=elevator ) )
     then 
     (
       if ( or ( not ford= ) highway=ford )              then ( multiply 100 ford_penalty )
