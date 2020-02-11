@@ -23,10 +23,10 @@ assign is_wet                   = 0               # %is_wet% | Choose a safer ro
 assign mtb_hard_factor          = 0               # %mtb_hard_factor% | Difficulty of the route (0:xc/am...2:allmountain...4:enduro) | number
 
 # the global elevation parameters
-assign downhillcost             = max 0 ( sub 30 ( multiply mtb_hard_factor 10 ) )
-assign downhillcutoff           = 4
-assign uphillcost               = max 0 ( sub 40 ( multiply mtb_hard_factor 15 ) )
-assign uphillcutoff             = 1.5
+assign downhillcost             = 100
+assign downhillcutoff           = 25
+assign uphillcost               = 100
+assign uphillcutoff             = 25
 
 # elevation filtering parameters (tbd: optimized settings)
 assign elevationpenaltybuffer   = 10
