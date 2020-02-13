@@ -1,9 +1,7 @@
 #
-# mountainbike profile by zossebart
-# v1.1.2
-# see https://github.com/zossebart/brouter-mtb for information and releases
+# enduro-motorcycle profile by zossebart (on suggestion by Giovanni)
 #
-# CAUTION! always ride carefully, routing data and/or route calculation might not be accurate and safe at all times!
+# This profile tries to focus on "dirtroads", avoiding roads as well as spaths/footways.
 #
 
 ---context:global   # following code refers to global config
@@ -18,7 +16,7 @@ assign validForCars             = true
 assign validForFoot             = false
 
 # Locus nav interface flags
-assign is_wet                   = 0               # %is_wet% | Choose a safer route in wet conditions | boolean
+assign is_wet                   = false           # %is_wet% | Choose a safer route in wet conditions | boolean
 assign avoid_smallways          = true            # %avoid_smallways% | Avoid paths/footways | boolean
 
 # the global elevation parameters
