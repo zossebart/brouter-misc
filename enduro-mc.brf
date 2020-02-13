@@ -20,7 +20,6 @@ assign validForFoot             = false
 # Locus nav interface flags
 assign is_wet                   = 0               # %is_wet% | Choose a safer route in wet conditions | boolean
 assign avoid_smallways          = true            # %avoid_smallways% | Avoid paths/footways | boolean
-assign mtb_hard_factor          = 0               # %mtb_hard_factor% | Difficulty of the route (0:xc/am...2:allmountain...4:enduro) | number
 
 # the global elevation parameters
 assign downhillcost             = 100
@@ -46,8 +45,7 @@ assign private_penalty          = 50               # penalty for private ways an
 assign slippery_muddy_penalty   = if is_wet        # penalty for unpaved roads and tracks, which are tricky to ride when wet
                                     then 2
                                     else 0
-assign ford_penalty             = max 0 ( sub 15 ( multiply mtb_hard_factor 8 ) )
-                                                   # penalty for fords (you might not want to get your feet wet ;-) )
+assign ford_penalty             = 0                # penalty for fords (you might not want to get your feet wet ;-) )
 
 # ------------------------------------------- global defines end
 
@@ -134,13 +132,8 @@ assign hw_minor_penalty =
 # additional penalties for other road attributes
 #
 assign tracktype_penalty =
-  max 0 
-  multiply 
-  ( sub 1 ( multiply mtb_hard_factor 0.5 ) )
-  (
-    if tracktype=grade5                                    then 0.2
-                                                           else 0
-  )
+    if tracktype=grade5                                 then 0.2
+                                                        else 0
 
 assign traffic_penalty =
   multiply 
@@ -239,7 +232,6 @@ assign misc_penalty =
         )
   add if smoothness=impassable                           then 10
                                                          else 0
-  max 0 multiply ( sub 1 ( multiply mtb_hard_factor 0.3333 ) )
   add if surfacebadwhenwet                               then slippery_muddy_penalty
                                                          else 0
   add if highwaybadwhenwet                               then slippery_muddy_penalty
