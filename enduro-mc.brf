@@ -237,6 +237,14 @@ assign misc_penalty =
   if surface=sand|mud                                    then 3
                                                          else 0
 
+assign onewaypenalty
+       switch switch reversedirection=yes
+                     switch oneway=
+                            junction=roundabout
+                            or oneway=yes or oneway=true oneway=1
+                     oneway=-1
+              9999
+              0.0
 
 #
 # now assign the parameters for the routing engine (initialcost, turncost and flat/up/down costfactors)
@@ -316,6 +324,7 @@ assign costfactor =
   if and highway= not route=ferry                       then 100000
     else
     min 9999
+    add onewaypenalty
     add misc_penalty
     add tracktype_penalty
     max 1
