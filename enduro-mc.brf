@@ -203,12 +203,7 @@ assign motorcycleaccess =
 assign access_penalty = 
 if motorcycleaccess 
   then 0
-  else 
-  (
-    if ( or  access=private or motor_vehicle=private or vehicle=private motorcycle=private )
-      then                                                    private_penalty # access with penalty for private
-      else                                                    100000          # absolutely no access
-  )
+  else 9999
 
 #
 # combine additional penaltys which are common for flat, up and down ways
