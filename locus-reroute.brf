@@ -14,6 +14,11 @@ assign turnInstructionMode 2  # 0=none, 1=auto-choose, 2=locus-style, 3=osmand-s
 assign turncost 0
 assign initialcost 0
 
+#
+# include smoothness= and surface=for track analysis
+#
+assign dummyUsage or smoothness= surface=
+
 assign costfactor
   switch highway= 100000
                   1

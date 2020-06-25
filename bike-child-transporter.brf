@@ -35,6 +35,11 @@ assign classifier_ferry    = 2
 ---context:way   # following code refers to way-tags
 
 #
+# include smoothness= for track analysis
+#
+assign dummyUsage = smoothness=
+
+#
 # pre-calculate some logical expressions
 #
 
