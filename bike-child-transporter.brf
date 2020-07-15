@@ -15,7 +15,7 @@ assign   ignore_cycleroutes   = false   # set to true for better elevation resul
 assign   stick_to_cycleroutes = false   # set to true to just follow cycleroutes
 assign   avoid_unsafe         = true   # set to true to avoid standard highways
 assign   lcn_exceptions       = true # set to ture to avoid low-quality ways even if they are part of a cycleroute
-assign   turnInstructionMode  = 1  # 0=none, 1=auto-choose, 2=locus-style, 3=osmand-style
+assign   turnInstructionMode  = 1     # %turnInstructionMode% | Mode for the generated turn instructions | [0=none, 1=auto-choose, 2=locus-style, 3=osmand-style, 4=comment-style, 5=gpsies-style]
 
 assign   validForBikes        = true
 
