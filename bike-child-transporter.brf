@@ -8,14 +8,15 @@
 # Use the following switches to change behaviour
 # (1=yes, 0=no):
 
-assign   consider_elevation   = true   # set to false to ignore elevation in routing
-assign   allow_steps          = false   # set to false to disallow steps
-assign   allow_ferries        = true   # set to false to disallow ferries
-assign   ignore_cycleroutes   = false   # set to true for better elevation results
-assign   stick_to_cycleroutes = false   # set to true to just follow cycleroutes
-assign   avoid_unsafe         = true   # set to true to avoid standard highways
-assign   lcn_exceptions       = true # set to ture to avoid low-quality ways even if they are part of a cycleroute
-assign   turnInstructionMode  = 1     # %turnInstructionMode% | Mode for the generated turn instructions | [0=none, 1=auto-choose, 2=locus-style, 3=osmand-style, 4=comment-style, 5=gpsies-style, 6=oruxmaps-style]
+assign   consider_elevation           = true   # set to false to ignore elevation in routing
+assign   allow_steps                  = false   # set to false to disallow steps
+assign   allow_ferries                = true   # set to false to disallow ferries
+assign   ignore_cycleroutes           = false   # set to true for better elevation results
+assign   stick_to_cycleroutes         = false   # set to true to just follow cycleroutes
+assign   avoid_unsafe                 = true   # set to true to avoid standard highways
+assign   lcn_exceptions               = true # set to ture to avoid low-quality ways even if they are part of a cycleroute
+assign   turnInstructionMode          = 1     # %turnInstructionMode% | Mode for the generated turn instructions | [0=none, 1=auto-choose, 2=locus-style, 3=osmand-style, 4=comment-style, 5=gpsies-style, 6=oruxmaps-style]
+assign   turnInstructionCatchingRange = 10
 
 assign   validForBikes        = true
 
