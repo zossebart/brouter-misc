@@ -48,6 +48,17 @@ assign priorityclassifier =
   else if ( highway=pedestrian                ) then  2
   else 0
 
+assign isroundabout = junction=roundabout
+assign islinktype = highway=motorway_link|trunk_link|primary_link|secondary_link|tertiary_link
+assign isgoodforcars = if greater priorityclassifier 6 then true
+                  else if ( highway=residential|living_street|service ) then true
+                  else if ( and highway=track tracktype=grade1 ) then true
+                  else false
+
+assign classifiermask add multiply isroundabout   4
+                      add multiply islinktype     8
+                          multiply isgoodforcars 16
+
 ---context:node  # following code refers to node tags
 
 assign initialcost 0
