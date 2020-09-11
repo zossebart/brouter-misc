@@ -13,7 +13,15 @@ assign turnInstructionCatchingRange 10
 ---context:way   # following code refers to way-tags
 
 assign turncost 0
-assign initialcost 0
+
+assign initialclassifier =
+  if ( and junction=roundabout reversedirection=yes )
+  then 2
+  else 1
+
+assign initialcost =
+     if ( equal initialclassifier 2 ) then 9999
+     else 0
 
 #
 # include smoothness= and surface=for track analysis
