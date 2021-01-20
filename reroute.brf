@@ -29,8 +29,9 @@ assign initialcost =
 assign dummyUsage or smoothness= surface=
 
 assign costfactor
-  switch highway= 100000
+  switch and not route=ferry highway= 100000
                   1
+
 # odd priorities indicate link-types
 assign priorityclassifier =
 
