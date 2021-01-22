@@ -34,7 +34,7 @@ assign elevationbufferreduce    = 0
 
 assign voiceprio                = 2                # 1: all ways have the same prio (max instructions)
                                                    # 2: mtb prio, more instructions on different small way types
-assign mj_rd_penalty            = 0.5              # additional penalty for major roads for finetuning
+assign mj_rd_penalty            = 5                # additional penalty for major roads for finetuning
 assign construction_penalty     = 9999             # penalty for roads in construction
 assign steps_penalty            = 9999             # avoid steps
                                                    # penalty for steps
