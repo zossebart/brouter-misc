@@ -227,7 +227,7 @@ assign misc_penalty =
                                                          else 0
   add if highwaybadwhenwet                               then slippery_muddy_penalty
                                                          else 0
-  if surface=sand|mud                                    then 3
+  if surface=asphalt|concrete|paved|paving_stones        then 3
                                                          else 0
 
 assign onewaypenalty
