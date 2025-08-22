@@ -12,9 +12,6 @@ assign   validForFoot        1
 
 ---context:way   # following code refers to way-tags
 
-assign any_cycleroute or route_bicycle_icn=yes or route_bicycle_ncn=yes or route_bicycle_rcn=yes route_bicycle_lcn=yes
-assign nodeaccessgranted or any_cycleroute lcn=yes
-
 assign turncost 0
 
 assign initialclassifier =
@@ -35,31 +32,14 @@ assign defaultaccess
                      1
 
 #
-# calculate logical bike access
-#
-assign bikeaccess
-       or any_cycleroute
-          switch bicycle=
-                 switch bicycle_road=yes
-                    1
-                    switch vehicle=
-                            defaultaccess
-                            switch or vehicle=private vehicle=no
-                                0
-                                1
-                 not or bicycle=private or bicycle=no bicycle=dismount
-
-#
 # calculate logical foot access
 #
 assign footaccess
-       or bikeaccess
-          or bicycle=dismount
-             switch foot=
-                    defaultaccess
-                    not or foot=private foot=no
+       switch foot=
+              defaultaccess
+              not or foot=private foot=no
 
-assign accesspenalty switch or bikeaccess footaccess 0 100000
+assign accesspenalty switch footaccess 0 100000
 
 assign costfactor
   add accesspenalty
@@ -126,24 +106,11 @@ assign defaultaccess
                      0
                      1
 
-assign bikeaccess
-       or nodeaccessgranted=yes
-          switch bicycle=
-                 switch vehicle=
-                        defaultaccess
-                        switch or vehicle=private vehicle=no
-                               0
-                               1
-                 switch or bicycle=private or bicycle=no bicycle=dismount
-                        0
-                        1
-
 assign footaccess
-       or bicycle=dismount
-          switch foot=
-                 defaultaccess
-                 switch or foot=private foot=no
-                        0
-                        1
+       switch foot=
+              defaultaccess
+              switch or foot=private foot=no
+                     0
+                     1
 
-assign initialcost switch or bikeaccess footaccess 0 1000000
+assign initialcost switch footaccess 0 1000000
