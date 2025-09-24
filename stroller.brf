@@ -10,6 +10,8 @@ assign uphillcutoff 1.5
 assign processUnusedTags 1
 
 assign   turnInstructionMode  = 1  # %turnInstructionMode% | Mode for the generated turn instructions | [0=none, 1=auto-choose, 2=locus-style, 3=osmand-style, 4=comment-style, 5=gpsies-style, 6=orux-style, 7=locus-old-style]
+assign   considerSidewalksSafe = false  # %considerSidewalksSafe% | Set to "true" to consider sidewalks as safe regardless of way type | boolean
+
 assign   validForFoot        1
 
 ---context:way   # following code refers to way-tags
@@ -45,8 +47,17 @@ assign accesspenalty switch footaccess 0 100000
 
 assign isresidentialorliving = or highway=residential|living_street living_street=yes
 
+assign has_sidewalk = sidewalk=yes|left|right|both
+assign sidewalkreduce if has_sidewalk then 0.6 else 1
+
+assign highwaymainpenalty = if highway=service|rest_area|tertiary|tertiary_link|unclassified then 2
+                            else if highway=services|yes|secondary|secondary_link|road then 3
+                            else if highway=primary|primary_link then 4
+                            else 0
+
 assign costfactor
   add accesspenalty
+  max 1 # prevent cf falling below 1 because of multiplications later on
 
   if      and highway= not route=ferry then  100000
 
@@ -60,9 +71,10 @@ assign costfactor
               else if tracktype=grade4 then 2.5
               else 5
        )
-  else if highway=service|rest_area|tertiary|tertiary_link|unclassified then 2
-  else if highway=services|yes|secondary|secondary_link|road then 3
-  else if highway=primary|primary_link then 4
+  else if highwaymainpenalty then (
+       if and has_sidewalk considerSidewalksSafe then 1
+              else multiply sidewalkreduce highwaymainpenalty
+  )
   else 99999
 
 # way priorities used for voice hint generation
