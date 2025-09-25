@@ -12,6 +12,9 @@ assign processUnusedTags 1
 assign   turnInstructionMode  = 1  # %turnInstructionMode% | Mode for the generated turn instructions | [0=none, 1=auto-choose, 2=locus-style, 3=osmand-style, 4=comment-style, 5=gpsies-style, 6=orux-style, 7=locus-old-style]
 assign   considerSidewalksSafe = false  # %considerSidewalksSafe% | Set to "true" to consider sidewalks as safe regardless of way type | boolean
 assign   allow_steps  = 1  # %allow_steps% | Wether to allow steps | [0=no, 1=only-use-ramp, 2=avoid-or-use-ramp, 3=yes]
+assign   use_cycleways = false # %use_cycleways% | Set to "true" to also use cycleways, otherwise try to avoid them | boolean
+
+assign   cycleway_cost = switch use_cycleways 1 5
 
 assign   validForFoot        1
 
@@ -83,6 +86,16 @@ assign costfactor
                      if ramp:stroller=yes then 2 else 50
               else if equal allow_steps 3 then 1
               else 99999 # allow_steps = 0 or other values
+  )
+  else if highway=path|cycleway then (
+              if foot=designated then (
+                     if or highway=cycleway bicycle=designated then
+                            if segregated=yes then 1 # footway/cycleway with segregation
+                                              else 1.2 # shared foot/cycleway
+                     else 1 # designated footway
+              )
+              else if and or highway=cycleway bicycle=designated not foot=designated then cycleway_cost # designated cycleway
+              else 50 # uncertain path not explicitly designated for pedestrians
   )
   else 99999
 
