@@ -13,6 +13,7 @@ assign   turnInstructionMode  = 1  # %turnInstructionMode% | Mode for the genera
 assign   considerSidewalksSafe = false  # %considerSidewalksSafe% | Set to "true" to consider sidewalks as safe regardless of way type | boolean
 assign   allow_steps  = 1  # %allow_steps% | Wether to allow steps | [0=no, 1=only-use-ramp, 2=avoid-or-use-ramp, 3=yes]
 assign   use_cycleways = false # %use_cycleways% | Set to "true" to also use cycleways, otherwise try to avoid them | boolean
+assign   allowed_roughness = 2 # %allowed_roughness% | How much rumbling is allowed | [0=as smooth as possible, 1=some rumbling allowed, 2=neutral, 3=prefer rumbling, 4=avoid smooth]
 
 assign   cycleway_cost = switch use_cycleways 1 5
 
@@ -59,8 +60,26 @@ assign highwaymainpenalty = if highway=service|rest_area|tertiary|tertiary_link|
                             else if highway=primary|primary_link then 4
                             else 0
 
+# calculate roughness penalty
+assign surf_smooth_penalty
+       if or smoothness=excellent surface=asphalt|paved|concrete then 4 # smooth
+       else if or smoothness=good|very_good surface=paved|compacted|fine_gravel|sett|ground|dirt|wood|earth|metal then 3 # less smooth
+       else if or smoothness=intermediate surface=gravel|unpaved|pebblestone|grass_paver then 1 # somewhat rough
+       else if or smoothness=bad|very_bad|robust_wheels surface=cobblestone then 0 # very rough
+       else 2 #neutral
+
+assign roughness_coeff = multiply -1 ( sub 1 ( multiply allowed_roughness 0.5 ) ) # scale allowed_roughness from 0..2..4 to -1..0..1
+assign surf_smooth_coeff = multiply -1 ( sub 1 ( multiply surf_smooth_penalty 0.5 ) ) # scale allowed_roughness from 0..2..4 to -1..0..1
+assign roughness_temp = multiply roughness_coeff surf_smooth_coeff
+
+assign roughness_penalty if roughness_temp then (
+              multiply 2 add 1 roughness_temp
+       )
+       else 0 # either allowed_roughness was 'neutral' and/or surf_smooth_penalty was not set
+
 assign costfactor
   add accesspenalty
+  add roughness_penalty
   max 1 # prevent cf falling below 1 because of multiplications later on
 
   if      and highway= not route=ferry then  100000
