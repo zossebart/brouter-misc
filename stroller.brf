@@ -61,12 +61,31 @@ assign highwaymainpenalty = if highway=service|rest_area|tertiary|tertiary_link|
                             else 0
 
 # calculate roughness penalty
-assign surf_smooth_penalty
-       if or smoothness=excellent surface=asphalt|paved|concrete then 4 # smooth
-       else if or smoothness=good|very_good surface=paved|compacted|fine_gravel|sett|ground|dirt|wood|earth|metal then 3 # less smooth
-       else if or smoothness=intermediate surface=gravel|unpaved|pebblestone|grass_paver then 1 # somewhat rough
-       else if or smoothness=bad|very_bad|robust_wheels surface=cobblestone then 0 # very rough
-       else 2 #neutral
+assign smoothness_penalty
+       if smoothness=excellent then 4 # smooth
+       else if smoothness=good|very_good then 3 # less smooth
+       else if smoothness=intermediate then 1 # somewhat rough
+       else if smoothness=bad|very_bad|robust_wheels then 0 # very rough
+       else 2 # not set
+
+assign surface_penalty
+       if surface=asphalt|paved|concrete then 4 # smooth
+       else if surface=paved|compacted|fine_gravel|sett|ground|dirt|wood|earth|metal then 3 # less smooth
+       else if surface=gravel|unpaved|pebblestone|grass_paver then 1 # somewhat rough
+       else if surface=cobblestone then 0 # very rough
+       else 2 # not set
+
+assign tracktype_penalty
+       if tracktype=grade1 then 4 #smooth
+       else if tracktype=grade2 then 3 # less smooth
+       else if tracktype=grade3 then 1 # somewhat rough
+       else if tracktype=grade4 then 0 # very rough
+       else 2 # not set
+
+assign surf_smooth_penalty if not equal 2 smoothness_penalty then smoothness_penalty
+                     else if not equal 2 surface_penalty then surface_penalty
+                     else if not equal 2 tracktype_penalty then tracktype_penalty
+                     else 2 # not set
 
 assign roughness_coeff = multiply -1 ( sub 1 ( multiply allowed_roughness 0.5 ) ) # scale allowed_roughness from 0..2..4 to -1..0..1
 assign surf_smooth_coeff = multiply -1 ( sub 1 ( multiply surf_smooth_penalty 0.5 ) ) # scale allowed_roughness from 0..2..4 to -1..0..1
@@ -86,14 +105,7 @@ assign costfactor
 
   else if route=ferry                  then  5.67
   else if or isresidentialorliving
-          highway=footway|pedestrian|platform|corridor|crossing|bus_stop then 1
-  else if highway=track then (
-              if tracktype=grade1 then 1
-              else if tracktype=grade2 then 1.5
-              else if tracktype=grade3 then 1.7
-              else if tracktype=grade4 then 2.5
-              else 5
-       )
+          highway=footway|pedestrian|platform|corridor|crossing|bus_stop|track then 1
   else if highwaymainpenalty then (
        if and has_sidewalk considerSidewalksSafe then 1
               else multiply sidewalkreduce highwaymainpenalty
