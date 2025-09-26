@@ -62,25 +62,30 @@ assign highwaymainpenalty = if highway=service|rest_area|tertiary|tertiary_link|
 
 # calculate roughness penalty
 assign smoothness_penalty
-       if smoothness=excellent then 4 # smooth
+       if smoothness= then 2 # not set
+       else if smoothness=excellent then 4 # smooth
        else if smoothness=good|very_good then 3 # less smooth
        else if smoothness=intermediate then 1 # somewhat rough
        else if smoothness=bad|very_bad|robust_wheels then 0 # very rough
-       else 2 # not set
+       else 100 # avoid all other values
 
 assign surface_penalty
-       if surface=asphalt|paved|concrete then 4 # smooth
+       if surface= then 2 # not set
+       else if surface=asphalt|paved|concrete then 4 # smooth
        else if surface=paved|compacted|fine_gravel|sett|ground|dirt|wood|earth|metal then 3 # less smooth
        else if surface=gravel|unpaved|pebblestone|grass_paver then 1 # somewhat rough
        else if surface=cobblestone then 0 # very rough
-       else 2 # not set
+       else 5 # avoid all other values (grass, sand, mud, clay)
 
 assign tracktype_penalty
-       if tracktype=grade1 then 4 #smooth
+       if tracktype= then 2 # not set
+       else if tracktype=grade1 then 4 #smooth
        else if tracktype=grade2 then 3 # less smooth
        else if tracktype=grade3 then 1 # somewhat rough
        else if tracktype=grade4 then 0 # very rough
-       else 2 # not set
+       else 5 # tracktype=grade5
+
+assign smooth_surf_tracktype_high = max smoothness_penalty max surface_penalty tracktype_penalty
 
 assign surf_smooth_penalty if not equal 2 smoothness_penalty then smoothness_penalty
                      else if not equal 2 surface_penalty then surface_penalty
@@ -91,7 +96,9 @@ assign roughness_coeff = multiply -1 ( sub 1 ( multiply allowed_roughness 0.5 ) 
 assign surf_smooth_coeff = multiply -1 ( sub 1 ( multiply surf_smooth_penalty 0.5 ) ) # scale allowed_roughness from 0..2..4 to -1..0..1
 assign roughness_temp = multiply roughness_coeff surf_smooth_coeff
 
-assign roughness_penalty if roughness_temp then (
+assign roughness_penalty
+       if greater smooth_surf_tracktype_high 4 then smooth_surf_tracktype_high
+       else if roughness_temp then (
               multiply 2 add 1 roughness_temp
        )
        else 0 # either allowed_roughness was 'neutral' and/or surf_smooth_penalty was not set
