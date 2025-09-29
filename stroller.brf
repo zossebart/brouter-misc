@@ -119,11 +119,11 @@ assign costfactor
   )
   else if highway=steps then (
               if equal allow_steps 1 then
-                     if ramp:stroller=yes then 2 else 99999
+                     if ramp:stroller=yes then 2 else 9999
               else if equal allow_steps 2 then
                      if ramp:stroller=yes then 2 else 50
               else if equal allow_steps 3 then 1
-              else 99999 # allow_steps = 0 or other values
+              else 9999 # allow_steps = 0 or other values
   )
   else if highway=path|cycleway then (
               if foot=designated then (
@@ -135,7 +135,7 @@ assign costfactor
               else if and or highway=cycleway bicycle=designated not foot=designated then cycleway_cost # designated cycleway
               else 50 # uncertain path not explicitly designated for pedestrians
   )
-  else 99999
+  else 9999
 
 # way priorities used for voice hint generation
 
