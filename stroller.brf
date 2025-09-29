@@ -14,6 +14,8 @@ assign   considerSidewalksSafe = false  # %considerSidewalksSafe% | Set to "true
 assign   allow_steps  = 1  # %allow_steps% | Wether to allow steps | [0=no, 1=only-use-ramp, 2=avoid-or-use-ramp, 3=yes]
 assign   use_cycleways = false # %use_cycleways% | Set to "true" to also use cycleways, otherwise try to avoid them | boolean
 assign   allowed_roughness = 2 # %allowed_roughness% | How much rumbling is allowed | [0=as smooth as possible, 1=some rumbling allowed, 2=neutral, 3=prefer rumbling, 4=avoid smooth]
+assign   pass_uncertain_barriers = false # %pass_uncertain_barriers% | Set to "true", if barriers with no access rules should be considered ok to pass | boolean
+assign   twin_stroller = false # %twin_stroller% | Enable if you have a twin stroller, which can not pass certain barriers e.g. bicycle barriers | boolean
 
 assign   cycleway_cost = switch use_cycleways 1 5
 
@@ -194,4 +196,26 @@ assign footaccess
                      0
                      1
 
-assign initialcost switch footaccess 0 1000000
+assign accessible_barrier_penalty =
+       if barrier=bollard|entrance|border_control|bus_trap|sump_buster|no|spikes|checkpoint|toll_booth then 1
+       else if barrier=sally_port|kerb|stone|block then 10
+       else if barrier=motorcycle_barrier|cycle_barrier then if twin_stroller then 1000000 else 20
+       else 0
+
+assign possible_restricted_barrier_penalty =
+       if barrier=bump_gate|lift_gate|swing_gate|hampshire_gate|door|gate then 30
+       else if barrier=cattle_grid|kissing_gate|horse_stile|chain|rope then 50
+       else 0
+
+assign barrier_penalty =
+       if barrier= then 0
+       else if accessible_barrier_penalty then accessible_barrier_penalty
+       else if possible_restricted_barrier_penalty then
+              if and access= pass_uncertain_barriers then
+                     accessible_barrier_penalty
+              else 1000000
+       else 1000000
+
+assign initialcost =
+       add switch footaccess 0 1000000
+       barrier_penalty
