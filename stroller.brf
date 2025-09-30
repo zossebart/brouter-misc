@@ -57,7 +57,8 @@ assign isresidentialorliving = or highway=residential|living_street living_stree
 assign has_sidewalk = sidewalk=yes|left|right|both
 assign sidewalkreduce if has_sidewalk then 0.6 else 1
 
-assign highwaymainpenalty = if highway=service|rest_area|tertiary|tertiary_link|unclassified then 2
+assign highwaymainpenalty = if highway=service then 1.5
+                            else if highway=rest_area|tertiary|tertiary_link|unclassified then 2
                             else if highway=services|yes|secondary|secondary_link|road then 3
                             else if highway=primary|primary_link then 4
                             else 0
