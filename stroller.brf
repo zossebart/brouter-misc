@@ -136,6 +136,7 @@ assign costfactor
                      else 1 # designated footway
               )
               else if and or highway=cycleway bicycle=designated not foot=designated then cycleway_cost # designated cycleway
+              else if and highway=path equal 4 surface_penalty then 1.3 # path with paved surface, so likely not a small trail in the woods
               else 50 # uncertain path not explicitly designated for pedestrians
   )
   else 9999
