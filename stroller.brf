@@ -218,5 +218,5 @@ assign barrier_penalty =
        else 1000000
 
 assign initialcost =
-       add switch footaccess 0 1000000
-       barrier_penalty
+       if or not ford= not footaccess then 1000000
+       else barrier_penalty
