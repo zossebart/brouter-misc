@@ -74,7 +74,7 @@ assign smoothness_penalty
 assign surface_penalty
        if surface= then 2 # not set
        else if surface=asphalt|paved|concrete then 4 # smooth
-       else if surface=paved|compacted|fine_gravel|sett|ground|dirt|wood|earth|metal then 3 # less smooth
+       else if surface=paving_stones|compacted|fine_gravel|sett|ground|dirt|wood|earth|metal then 3 # less smooth
        else if surface=gravel|unpaved|pebblestone|grass_paver then 1 # somewhat rough
        else if surface=cobblestone then 0 # very rough
        else 5 # avoid all other values (grass, sand, mud, clay)
