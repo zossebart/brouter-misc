@@ -10,6 +10,7 @@ assign   use_cycleways = false # %use_cycleways% | Set to "true" to also use cyc
 assign   allowed_roughness = 2 # %allowed_roughness% | How much rumbling is allowed | [0=as smooth as possible, 1=some rumbling allowed, 2=neutral, 3=prefer rumbling, 4=avoid smooth]
 assign   pass_uncertain_barriers = false # %pass_uncertain_barriers% | Set to "true", if barriers with no access rules should be considered ok to pass | boolean
 assign   twin_stroller = false # %twin_stroller% | Enable if you have a twin stroller, which can not pass certain barriers e.g. bicycle barriers | boolean
+assign   avoid_noise = 2 # %avoid_noise% | level of noise avoidance | [0=0, 1=1, 2=2, 3=3, 4=max]
 
 assign   cycleway_cost = switch use_cycleways 1 5
 
@@ -107,9 +108,18 @@ assign roughness_penalty
        )
        else 0 # either allowed_roughness was 'neutral' and/or surf_smooth_penalty was not set
 
+assign noise_class =
+       switch estimated_noise_class=  0
+       switch estimated_noise_class=1 1
+       switch estimated_noise_class=2 2
+       switch estimated_noise_class=3 3
+       switch estimated_noise_class=4 4
+       switch estimated_noise_class=5 5 6
+
 assign costfactor
   add accesspenalty
   add roughness_penalty
+  add multiply avoid_noise multiply 0.25 noise_class
   max 1 # prevent cf falling below 1 because of multiplications later on
 
   if      and highway= not route=ferry then  100000
