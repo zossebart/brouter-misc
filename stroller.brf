@@ -1,15 +1,9 @@
 ---context:global   # following code refers to global config
 
-# the elevation parameters
-
-assign downhillcost 0
-assign downhillcutoff 1.5
-assign uphillcost 0
-assign uphillcutoff 1.5
-
 assign processUnusedTags 1
 
 assign   turnInstructionMode  = 1  # %turnInstructionMode% | Mode for the generated turn instructions | [0=none, 1=auto-choose, 2=locus-style, 3=osmand-style, 4=comment-style, 5=gpsies-style, 6=orux-style, 7=locus-old-style]
+assign   avoid_hills = 0 # %avoid_hills% | How much height-meters (up and down) should be avoided | [0=not at all, 1=1, 2=2, 3=3, 4=as much as possible]
 assign   considerSidewalksSafe = false  # %considerSidewalksSafe% | Set to "true" to consider sidewalks as safe regardless of way type | boolean
 assign   allow_steps  = 1  # %allow_steps% | Wether to allow steps | [0=no, 1=only-use-ramp, 2=avoid-or-use-ramp, 3=yes]
 assign   use_cycleways = false # %use_cycleways% | Set to "true" to also use cycleways, otherwise try to avoid them | boolean
@@ -18,6 +12,13 @@ assign   pass_uncertain_barriers = false # %pass_uncertain_barriers% | Set to "t
 assign   twin_stroller = false # %twin_stroller% | Enable if you have a twin stroller, which can not pass certain barriers e.g. bicycle barriers | boolean
 
 assign   cycleway_cost = switch use_cycleways 1 5
+
+# the elevation parameters
+
+assign downhillcost multiply 25 avoid_hills
+assign downhillcutoff 2
+assign uphillcost multiply 25 avoid_hills
+assign uphillcutoff 2
 
 assign   validForFoot        1
 
