@@ -10,6 +10,7 @@ assign   use_cycleways = false # %use_cycleways% | Set to "true" to also use cyc
 assign   allowed_roughness = 2 # %allowed_roughness% | How much rumbling is allowed | [0=as smooth as possible, 1=some rumbling allowed, 2=neutral, 3=prefer rumbling, 4=avoid smooth]
 assign   pass_uncertain_barriers = false # %pass_uncertain_barriers% | Set to "true", if barriers with no access rules should be considered ok to pass | boolean
 assign   twin_stroller = false # %twin_stroller% | Enable if you have a twin stroller, which can not pass certain barriers e.g. bicycle barriers | boolean
+assign   prefer_lit = false # %consider_streetlights% | Wether to prefer lit ways | boolean
 
 assign   cycleway_cost = switch use_cycleways 1 5
 
@@ -107,9 +108,12 @@ assign roughness_penalty
        )
        else 0 # either allowed_roughness was 'neutral' and/or surf_smooth_penalty was not set
 
+assign dark_penalty if and prefer_lit lit=yes then 0 else 2
+
 assign costfactor
   add accesspenalty
   add roughness_penalty
+  add dark_penalty
   max 1 # prevent cf falling below 1 because of multiplications later on
 
   if      and highway= not route=ferry then  100000
