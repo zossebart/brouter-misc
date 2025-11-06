@@ -108,7 +108,9 @@ assign roughness_penalty
        )
        else 0 # either allowed_roughness was 'neutral' and/or surf_smooth_penalty was not set
 
-assign dark_penalty if and prefer_lit lit=yes then 0 else 2
+assign dark_penalty = if prefer_lit then
+       if lit=yes then 0 else 2
+       else 0
 
 assign costfactor
   add accesspenalty
