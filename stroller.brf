@@ -3,7 +3,7 @@
 # It tries to avoid major roads without sidewalks, steps without ramps and small unpaved paths.
 # It allows to select how much rocking (from uneven surfaces) you prefer or want to avoid.
 # You can also select if you prefer lit ways at night.
-# You can select how much you want to avoid noisy areas.
+# You can select how much you want to avoid noisy areas as well as how much you prefer green areas (forest, parks etc.).
 
 ---context:global   # following code refers to global config
 
@@ -19,6 +19,7 @@ assign   pass_uncertain_barriers = false # %pass_uncertain_barriers% | Set to "t
 assign   twin_stroller = false # %twin_stroller% | Enable if you have a twin stroller, which can not pass certain barriers e.g. bicycle barriers | boolean
 assign   turnInstructionMode  = 1  # %turnInstructionMode% | Mode for the generated turn instructions | [0=none, 1=auto-choose, 2=locus-style, 3=osmand-style, 4=comment-style, 5=gpsies-style, 6=orux-style, 7=locus-old-style]
 assign   avoid_noise = 2 # %avoid_noise% | level of noise avoidance | [0=not at all, 1=1, 2=2, 3=3, 4=max]
+assign   prefer_green = 0 # %prefer_green% | how much to prefer green areas | [0=don't prefer, 1=1, 2=2, 3=3, 4=max]
 
 assign   cycleway_cost = switch use_cycleways 1 5
 
@@ -128,11 +129,20 @@ assign noise_class =
        switch estimated_noise_class=4 4
        switch estimated_noise_class=5 5 6
 
+assign no_forest_class =
+       switch estimated_forest_class=  6
+       switch estimated_forest_class=1 5
+       switch estimated_forest_class=2 4
+       switch estimated_forest_class=3 3
+       switch estimated_forest_class=4 2
+       switch estimated_forest_class=5 1 0
+
 assign costfactor
   add accesspenalty
   add roughness_penalty
   add dark_penalty
   add multiply avoid_noise multiply 0.25 noise_class
+  add multiply prefer_green multiply 0.25 no_forest_class
   max 1 # prevent cf falling below 1 because of multiplications later on
 
   if      and highway= not route=ferry then  100000
