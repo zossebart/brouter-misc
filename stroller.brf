@@ -138,7 +138,7 @@ assign costfactor
   else if highway=path|footway|pedestrian|cycleway then (
               if or foot=designated highway=footway|pedestrian then (
                      if or highway=cycleway bicycle=designated|yes then
-                            if segregated=yes then 1 # footway/cycleway with segregation
+                            if or use_cycleways segregated=yes then 1 # footway/cycleway with segregation
                                               else 1.2 # shared foot/cycleway
                      else 1 # designated footway
               )
