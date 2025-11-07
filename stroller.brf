@@ -1,3 +1,9 @@
+# A walking profile for strollers/child carriers by zossebart.
+#
+# It tries to avoid major roads without sidewalks, steps without ramps and small unpaved paths.
+# It allows to select how much rocking (from uneven surfaces) you prefer or want to avoid.
+# You can also select if you prefer lit ways at night.
+
 ---context:global   # following code refers to global config
 
 assign processUnusedTags 1
