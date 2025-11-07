@@ -2,15 +2,15 @@
 
 assign processUnusedTags 1
 
-assign   turnInstructionMode  = 1  # %turnInstructionMode% | Mode for the generated turn instructions | [0=none, 1=auto-choose, 2=locus-style, 3=osmand-style, 4=comment-style, 5=gpsies-style, 6=orux-style, 7=locus-old-style]
-assign   avoid_hills = 0 # %avoid_hills% | How much height-meters (up and down) should be avoided | [0=not at all, 1=1, 2=2, 3=3, 4=as much as possible]
-assign   considerSidewalksSafe = false  # %considerSidewalksSafe% | Set to "true" to consider sidewalks as safe regardless of way type | boolean
-assign   allow_steps  = 1  # %allow_steps% | Wether to allow steps | [0=no, 1=only-use-ramp, 2=avoid-or-use-ramp, 3=yes]
+assign   allow_steps  = 1  # %allow_steps% | Wether to allow steps | [0=no, 1=only with stroller-ramp, 2=avoid or use stroller-ramp, 3=yes]
+assign   allowed_roughness = 2 # %allowed_roughness% | How much rocking is allowed | [0=as smooth as possible, 1=some rocking allowed, 2=neutral (no preference), 3=prefer rocking, 4=avoid smooth ways]
+assign   avoid_hills = 0 # %avoid_hills% | How much height-meters (up and down) should be avoided | [0=not at all, 1=1, 2=2, 3=3, 4=max]
 assign   use_cycleways = false # %use_cycleways% | Set to "true" to also use cycleways, otherwise try to avoid them | boolean
-assign   allowed_roughness = 2 # %allowed_roughness% | How much rumbling is allowed | [0=as smooth as possible, 1=some rumbling allowed, 2=neutral, 3=prefer rumbling, 4=avoid smooth]
+assign   considerSidewalksSafe = false  # %considerSidewalksSafe% | Set to "true" to consider sidewalks as safe regardless of way type | boolean
+assign   prefer_lit = false # %prefer_lit% | Wether to prefer lit ways | boolean
 assign   pass_uncertain_barriers = false # %pass_uncertain_barriers% | Set to "true", if barriers with no access rules should be considered ok to pass | boolean
 assign   twin_stroller = false # %twin_stroller% | Enable if you have a twin stroller, which can not pass certain barriers e.g. bicycle barriers | boolean
-assign   prefer_lit = false # %consider_streetlights% | Wether to prefer lit ways | boolean
+assign   turnInstructionMode  = 1  # %turnInstructionMode% | Mode for the generated turn instructions | [0=none, 1=auto-choose, 2=locus-style, 3=osmand-style, 4=comment-style, 5=gpsies-style, 6=orux-style, 7=locus-old-style]
 
 assign   cycleway_cost = switch use_cycleways 1 5
 
